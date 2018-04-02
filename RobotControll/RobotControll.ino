@@ -1,9 +1,9 @@
 #define TASKER_MAX_TASKS 2
 
 #include <WiFi.h>
-#include <ESPmDNS.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
+// #include <ESPmDNS.h>
+// #include <WiFiUdp.h>
+// #include <ArduinoOTA.h>
 #include <Tasker.h>
 #include <PubSubClient.h>
 
@@ -37,11 +37,11 @@
 #define LEDC_TIMER_8_BIT 8
 #define LEDC_BASE_FREQ 5000
 
-const char* ssid = "";
+const char* ssid = "iot-hub";
 const char* password = "";
-const char* mqtt_server = "192.168.1.2";
-const char* mqtt_user = "martin";
-const char* mqtt_password = "";
+const char* mqtt_server = "192.168.0.1";
+//const char* mqtt_user = "";
+//const char* mqtt_password = "";
 
 Tasker tasker;
 WiFiClient espClient;
@@ -51,7 +51,7 @@ uint8_t brightness = 0;
 uint8_t fadeAmount = 5;
 
 uint8_t pwm = 0;
-uint8_t pwm_max = 255;
+uint8_t pwm_max = 50;
 
 // ==================================================================
 
@@ -99,7 +99,7 @@ void forward(){
   digitalWrite(RL_B, LOW);
   digitalWrite(RR_A, HIGH);
   digitalWrite(RR_B, LOW);
-  tasker.setRepeated(ramp_up, 5, pwm_max);
+  tasker.setRepeated(ramp_up, 1, pwm_max);
   
 }
 
@@ -113,23 +113,10 @@ void backward(){
   digitalWrite(RL_B, HIGH);
   digitalWrite(RR_A, LOW);
   digitalWrite(RR_B, HIGH);
-  tasker.setRepeated(ramp_up, 5, pwm_max);
+  tasker.setRepeated(ramp_up, 1, pwm_max);
 }
 
 void left(){
-  pwm = 0;
-  digitalWrite(FL_A, LOW);
-  digitalWrite(FL_B, HIGH);
-  digitalWrite(FR_A, HIGH);
-  digitalWrite(FR_B, LOW);
-  digitalWrite(RL_A, LOW);
-  digitalWrite(RL_B, HIGH);
-  digitalWrite(RR_A, HIGH);
-  digitalWrite(RR_B, LOW);
-  tasker.setRepeated(ramp_up, 5, pwm_max);
-}
-
-void right(){
   pwm = 0;
   digitalWrite(FL_A, HIGH);
   digitalWrite(FL_B, LOW);
@@ -139,7 +126,20 @@ void right(){
   digitalWrite(RL_B, LOW);
   digitalWrite(RR_A, LOW);
   digitalWrite(RR_B, HIGH);
-  tasker.setRepeated(ramp_up, 5, pwm_max);
+  tasker.setRepeated(ramp_up, 1, pwm_max);
+}
+
+void right(){
+  pwm = 0;
+  digitalWrite(FL_A, LOW);
+  digitalWrite(FL_B, HIGH);
+  digitalWrite(FR_A, HIGH);
+  digitalWrite(FR_B, LOW);
+  digitalWrite(RL_A, LOW);
+  digitalWrite(RL_B, HIGH);
+  digitalWrite(RR_A, HIGH);
+  digitalWrite(RR_B, LOW);
+  tasker.setRepeated(ramp_up, 1, pwm_max);
 }
 
 void halt(){
@@ -163,7 +163,7 @@ void ramp_up(int){
   ledcAnalogWrite(LEDC_CHANNEL_2, pwm);
   ledcAnalogWrite(LEDC_CHANNEL_3, pwm);
   ledcAnalogWrite(LEDC_CHANNEL_4, pwm);
-  pwm++;
+  pwm = pwm + 5;
 }
 
 // ==================================================================
@@ -226,7 +226,8 @@ void setup() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(onMessageCallback);
   while (!client.connected()) {
-    if (!client.connect("ESP32", mqtt_user, mqtt_password )) {
+    if (!client.connect("ESP32")) {
+    //if (!client.connect("ESP32", mqtt_user, mqtt_password )) {
       delay(5000);
       Serial.print(".");
     }
@@ -238,9 +239,9 @@ void setup() {
  
   client.subscribe("robot/command");
 
-  ArduinoOTA.setHostname("ESP32");
-  ArduinoOTA.setPasswordHash("bc6414fb09e4bd5c2b0fd3c08a48fd2a");
-  ArduinoOTA.begin();
+  //ArduinoOTA.setHostname("ESP32");
+  //ArduinoOTA.setPasswordHash("bc6414fb09e4bd5c2b0fd3c08a48fd2a");
+  //ArduinoOTA.begin();
 
   // Setup done
   tasker.setInterval(heart, 30);
@@ -249,5 +250,5 @@ void setup() {
 void loop() {
   tasker.loop();
   client.loop();
-  ArduinoOTA.handle();
+  //ArduinoOTA.handle();
 }
