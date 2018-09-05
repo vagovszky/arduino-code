@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP 360        /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP 3600        /* Time ESP32 will go to sleep (in seconds) */
 
 #define TX 12 // RX of Sigfox module
 #define RX 14 // TX of Sigfox module
