@@ -1,9 +1,6 @@
 #define TX 12 // RX of Sigfox module
 #define RX 14 // TX of Sigfox module
 
-WiFi.mode(WIFI_OFF);
-btStop();
-
 HardwareSerial Sigfox(1);
 
 void setup() {
