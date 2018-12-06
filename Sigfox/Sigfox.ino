@@ -13,8 +13,8 @@ HardwareSerial Sigfox(1);
 float temperature;
 float humidity;
 char msg[8];
-unsigned int int_t;
-unsigned int int_h;
+int int_t;
+int int_h;
 
 void setup() {
   WiFi.mode(WIFI_OFF);
