@@ -12,9 +12,8 @@ DHTesp dht;
 HardwareSerial Sigfox(1);
 float temperature;
 float humidity;
-char msg[8];
-int int_t;
-int int_h;
+char msg[10];
+char sign_t;
 
 void setup() {
   WiFi.mode(WIFI_OFF);
@@ -32,13 +31,10 @@ void setup() {
 
   temperature = dht.getTemperature() * 100;
   humidity = dht.getHumidity() * 100;
-  int_t = (int) temperature;
-  int_h = (int) humidity;
 
-  Serial.println(int_t);
-  Serial.println(int_h);
-
-  sprintf(msg, "%04X%04X", int_t, int_h);
+  sign_t = (temperature < 0) ? '-' : '+';
+  
+  sprintf(msg, "%c%04d+%04d", sign_t, (int) abs(temperature), (int) humidity);
   
   Sigfox.print("AT$SF=");
   Sigfox.println(msg);
