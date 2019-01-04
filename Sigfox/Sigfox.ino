@@ -32,9 +32,11 @@ void setup() {
   temperature = dht.getTemperature() * 100;
   humidity = dht.getHumidity() * 100;
 
-  sign_t = (temperature < 0) ? '-' : '+';
+  sign_t = (temperature < 0) ? 'F' : '0';
   
-  sprintf(msg, "%c%04d+%04d", sign_t, (int) abs(temperature), (int) humidity);
+  sprintf(msg, "%c%04X%04X", sign_t, (int) abs(temperature), (int) humidity);
+
+  Serial.println(msg);
   
   Sigfox.print("AT$SF=");
   Sigfox.println(msg);
